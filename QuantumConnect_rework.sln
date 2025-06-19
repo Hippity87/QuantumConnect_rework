@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumConnect.BlazorApp", "QuantumConnect.BlazorApp\QuantumConnect.BlazorApp.csproj", "{8ED7D528-15E9-4835-B0F7-68F3D5D064F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumConnect.BlazorApp", "QuantumConnect.BlazorApp\QuantumConnect.BlazorApp.csproj", "{8ED7D528-15E9-4835-B0F7-68F3D5D064F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumConnect.TestConsole", "QuantumConnect.TestConsole\QuantumConnect.TestConsole.csproj", "{07AB4C23-4613-4648-84C3-700F4932DF26}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumConnect.TestConsole", "QuantumConnect.TestConsole\QuantumConnect.TestConsole.csproj", "{07AB4C23-4613-4648-84C3-700F4932DF26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumConnect.Core", "QuantumConnect.Core\QuantumConnect.Core.csproj", "{2B05CC42-F273-4246-9BAB-5DAF42670C80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantumConnect.Core", "QuantumConnect.Core\QuantumConnect.Core.csproj", "{2B05CC42-F273-4246-9BAB-5DAF42670C80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,82 @@
+﻿@using QuantumConnect.Core.GameEngine
+@using QuantumConnect.Core.Algorithms
+@using QuantumConnect.Core.Models
+
+<div>
+    <h3>Quantum Connect</h3>
+    @if (statusMessage is not null)
+    {
+        <div style="color: green; font-weight: bold;">@statusMessage</div>
+        <button @onclick="Reset">Restart</button>
+    }
+    <table>
+        @for (int row = 0; row < game.Rows; row++)
+        {
+            <tr>
+                @for (int col = 0; col < game.Columns; col++)
+                {
+                    var currentCol = col; // Local copy!
+                    <td @onclick="@(() => CellClicked(currentCol))">
+                        @GetCellSymbol(row, col)
+                    </td>
+                }
+
+            </tr>
+        }
+    </table>
+</div>
+
+@code {
+    private QuantumField game = new QuantumField(rows: 8, columns: 12, winLength: 6);
+    private RandomBot bot = new RandomBot();
+    private string? statusMessage;
+
+    private void CellClicked(int col)
+    {
+        Console.WriteLine($"Clicked column {col}, game status: {game.Status}");
+
+        // Defensive: check if game is over or col is out of bounds
+        if (game.Status != ExperimentStatus.Incomplete || col < 0 || col >= game.Columns) return;
+
+        // Human move
+        bool moveMade = game.MakeMove(col);
+        if (moveMade)
+        {
+            if (game.Status == ExperimentStatus.Incomplete)
+            {
+                // Bot move only if game not over
+                int botCol = bot.AccelerateQuark(game);
+                game.MakeMove(botCol);
+            }
+            UpdateStatus();
+        }
+        StateHasChanged(); // Ensure UI refreshes after move
+    }
+
+    private void UpdateStatus()
+    {
+        statusMessage = game.Status switch
+        {
+            ExperimentStatus.Collapsed => $"{game.CurrentPlayer} wins!",
+            ExperimentStatus.Uncertain => "Draw!",
+            _ => null
+        };
+    }
+
+    private string GetCellSymbol(int row, int col)
+    {
+        return game.GetCell(row, col) switch
+        {
+            SpaceOwnership.FirstPlayer => "●",
+            SpaceOwnership.SecondPlayer => "○",
+            _ => "."
+        };
+    }
+
+    private void Reset()
+    {
+        game.Reset();
+        statusMessage = null;
+        StateHasChanged();
+    }
+}
