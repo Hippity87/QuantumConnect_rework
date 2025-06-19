@@ -7,15 +7,18 @@ public class QuantumField
 {
     public int Rows { get; }
     public int Columns { get; }
+    public int WinLength { get; }
+
     private readonly SpaceOwnership[,] board;
     public SpaceOwnership CurrentPlayer { get; private set; } = SpaceOwnership.FirstPlayer;
     private readonly List<Move> moveHistory = new();
     public ExperimentStatus Status { get; private set; } = ExperimentStatus.Incomplete;
 
-    public QuantumField(int rows = 8, int columns = 12)
+    public QuantumField(int rows = 8, int columns = 12, int winLength = 6)
     {
         Rows = rows;
         Columns = columns;
+        WinLength = winLength;
         board = new SpaceOwnership[rows, columns];
         for (int r = 0; r < Rows; r++)
             for (int c = 0; c < Columns; c++)
@@ -96,7 +99,7 @@ public class QuantumField
             int count = 1;
             count += CountInDirection(row, col, dir[0], dir[1], player);
             count += CountInDirection(row, col, -dir[0], -dir[1], player);
-            if (count >= 4) return true;
+            if (count >= WinLength) return true;
         }
         return false;
     }
