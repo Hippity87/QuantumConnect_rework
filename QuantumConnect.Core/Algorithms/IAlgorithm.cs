@@ -8,10 +8,14 @@ using System.Threading.Tasks;
 // Algorithms/IAlgorithm.cs
 using QuantumConnect.Core.Models;
 
-namespace QuantumConnect.Core.Algorithms;
+using QuantumConnect.Core.GameEngine;
 
-public interface IAlgorithm
+namespace QuantumConnect.Core.Algorithms
 {
-    int AccelerateQuark(QuantumField field);
-    bool UseSpecialMove(QuantumField field) => false;
+
+    public interface IAlgorithm
+    {
+        int AccelerateQuark(QuantumField field);
+        bool UseSpecialMove(QuantumField field) => false;
+    }
 }

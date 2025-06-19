@@ -5,6 +5,10 @@ VisualStudioVersion = 17.12.35707.178 d17.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumConnect.BlazorApp", "QuantumConnect.BlazorApp\QuantumConnect.BlazorApp.csproj", "{8ED7D528-15E9-4835-B0F7-68F3D5D064F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumConnect.TestConsole", "QuantumConnect.TestConsole\QuantumConnect.TestConsole.csproj", "{07AB4C23-4613-4648-84C3-700F4932DF26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantumConnect.Core", "QuantumConnect.Core\QuantumConnect.Core.csproj", "{2B05CC42-F273-4246-9BAB-5DAF42670C80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{8ED7D528-15E9-4835-B0F7-68F3D5D064F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ED7D528-15E9-4835-B0F7-68F3D5D064F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ED7D528-15E9-4835-B0F7-68F3D5D064F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07AB4C23-4613-4648-84C3-700F4932DF26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07AB4C23-4613-4648-84C3-700F4932DF26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07AB4C23-4613-4648-84C3-700F4932DF26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07AB4C23-4613-4648-84C3-700F4932DF26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B05CC42-F273-4246-9BAB-5DAF42670C80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B05CC42-F273-4246-9BAB-5DAF42670C80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B05CC42-F273-4246-9BAB-5DAF42670C80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B05CC42-F273-4246-9BAB-5DAF42670C80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
