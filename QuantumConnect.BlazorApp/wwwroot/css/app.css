@@ -102,13 +102,18 @@ code {
     color: #c02d76;
 }
 
+.connect4-info {
+    margin-bottom: 16px;
+}
 
 .connect4-board {
-    background: #1e3a8a; /* Royal blue */
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(30,50,130,0.3);
+    background: #1e3a8a;
+    padding: 18px 14px 18px 14px;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(30,50,130,0.18);
     display: inline-block;
+    margin-bottom: 24px;
+    border: 4px solid #193075;
 }
 
 .connect4-row {
@@ -116,29 +121,57 @@ code {
 }
 
 .connect4-cell {
-    width: 48px;
-    height: 48px;
-    margin: 4px;
+    width: 44px;
+    height: 44px;
+    margin: 2.5px;
     border-radius: 50%;
-    background: #e0e7ef; /* Board holes: light blue/white */
-    box-shadow: inset 0 0 6px #444;
+    background: #e0e7ef; /* Board hole */
+    box-shadow: 0 2px 6px #4441, inset 0 0 7px #abc;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.15s;
-    border: 2px solid #1e3a8a;
+    border: 2px solid #204080;
+    transition: background 0.15s, box-shadow 0.2s;
+    position: relative;
 }
-
-    .connect4-cell.filled-red {
-        background: #ef4444; /* Red disc */
-    }
 
     .connect4-cell.filled-green {
         background: #22c55e; /* Green disc */
+        box-shadow: 0 0 12px 1px #13bb3b99, 0 0 20px 2px #afeec1cc;
+    }
+
+    .connect4-cell.filled-red {
+        background: #ef4444; /* Red disc */
+        box-shadow: 0 0 12px 1px #d63030b3, 0 0 20px 2px #fbbabb88;
     }
 
     .connect4-cell:hover {
-        filter: brightness(1.07);
-        outline: 2px solid #38bdf8;
+        outline: 2.2px solid #38bdf8;
+        filter: brightness(1.06);
+        z-index: 2;
     }
+
+    .connect4-cell.bomb-flash {
+        background: #fff700 !important;
+        box-shadow: 0 0 24px 5px #fff700, 0 0 40px 10px #fffb;
+        animation: bombflash 0.29s cubic-bezier(0.66,0,0.36,1);
+    }
+
+@keyframes bombflash {
+    0% {
+        background: #fff700;
+    }
+
+    55% {
+        background: #ffd95e;
+    }
+
+    90% {
+        background: #fffb;
+    }
+
+    100% {
+        background: #e0e7ef;
+    }
+}

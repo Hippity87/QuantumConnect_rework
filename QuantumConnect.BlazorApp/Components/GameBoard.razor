@@ -1,64 +1,125 @@
 ﻿@using QuantumConnect.Core.GameEngine
-@using QuantumConnect.Core.Algorithms
 @using QuantumConnect.Core.Models
+@using QuantumConnect.Core.Algorithms
+@using Microsoft.AspNetCore.Components.Web
 
-<div>
+<div class="connect4-info">
     <h3>Quantum Connect</h3>
-    @if (statusMessage is not null)
-    {
-        <div style="color: green; font-weight: bold;">@statusMessage</div>
-        <button @onclick="Reset">Restart</button>
-    }
-    <div class="connect4-board">
-        @for (int row = 0; row < game.Rows; row++)
-        {
-            <div class="connect4-row">
-                @for (int col = 0; col < game.Columns; col++)
-                {
-                    var currentCol = col;
-                    var cellState = game.GetCell(row, col);
-                    var cellClass = "connect4-cell";
-                    if (cellState == SpaceOwnership.FirstPlayer) cellClass += " filled-green";
-                    if (cellState == SpaceOwnership.SecondPlayer) cellClass += " filled-red";
-                    <div class="@cellClass" @onclick="@(() => CellClicked(currentCol))">
-                    </div>
-                }
-            </div>
-        }
+    <div>
+        Turn: <span style="color:@(game.CurrentPlayer == SpaceOwnership.FirstPlayer ? "#22c55e" : "#ef4444"); font-weight:bold">
+            @(game.CurrentPlayer == SpaceOwnership.FirstPlayer ? "Green (You)" : "Red (Bot)")
+        </span>
+    </div>
+    <div>
+        Bomb cooldown: @(game.BombCooldown == 0 ? "Ready!" : $"{game.BombCooldown} turns")
     </div>
     @if (statusMessage is not null)
     {
         <div style="color: green; font-weight: bold;">@statusMessage</div>
         <button @onclick="Reset">Restart</button>
     }
+</div>
 
+<div class="connect4-board">
+    @for (int row = 0; row < game.Rows; row++)
+    {
+        <div class="connect4-row">
+            @for (int col = 0; col < game.Columns; col++)
+            {
+                var currentCol = col; // local copy for lambda capture
+                var cellState = game.GetCell(row, col);
+                var cellClass = "connect4-cell";
+                if (cellState == SpaceOwnership.FirstPlayer) cellClass += " filled-green";
+                if (cellState == SpaceOwnership.SecondPlayer) cellClass += " filled-red";
+                if (game.LastBombBlast.Any(b => b.row == row && b.col == col)) cellClass += " bomb-flash";
+                <div class="@cellClass"
+                     title="Left-click: drop | Right-click: bomb"
+                     @onclick="@(async () => await CellClicked(currentCol))"
+                     @oncontextmenu:preventDefault="true"
+                     @oncontextmenu="@(async (e) => await BombMoveAsync(currentCol, e))">
+                </div>
+
+            }
+        </div>
+    }
 </div>
 
 @code {
     private QuantumField game = new QuantumField(rows: 8, columns: 12, winLength: 6);
-    private RandomBot bot = new RandomBot();
+    private LexBot bot = new LexBot();
     private string? statusMessage;
 
-    private void CellClicked(int col)
+    // --- Regular move (left-click) ---
+    private async Task CellClicked(int col)
     {
-        Console.WriteLine($"Clicked column {col}, game status: {game.Status}");
-
-        // Defensive: check if game is over or col is out of bounds
-        if (game.Status != ExperimentStatus.Incomplete || col < 0 || col >= game.Columns) return;
-
-        // Human move
-        bool moveMade = game.MakeMove(col);
-        if (moveMade)
+        if (game.Status != ExperimentStatus.Incomplete) return;
+        if (game.CurrentPlayer == SpaceOwnership.FirstPlayer) // Human
         {
-            if (game.Status == ExperimentStatus.Incomplete)
+            bool moveMade = game.MakeMove(col);
+            if (moveMade)
             {
-                // Bot move only if game not over
-                int botCol = bot.AccelerateQuark(game);
-                game.MakeMove(botCol);
+                UpdateStatus();
+                StateHasChanged();
+                await Task.Delay(120); // Small delay for visual polish
+
+                // Bot's turn (SecondPlayer)
+                if (game.Status == ExperimentStatus.Incomplete && game.CurrentPlayer == SpaceOwnership.SecondPlayer)
+                {
+                    await BotTurn();
+                }
             }
-            UpdateStatus();
         }
-        StateHasChanged(); // Ensure UI refreshes after move
+    }
+
+    // --- Bomb (right-click) ---
+    private async Task BombMoveAsync(int col, MouseEventArgs e)
+    {
+        if (game.Status != ExperimentStatus.Incomplete) return;
+        if (game.BombCooldown > 0) return;
+        if (game.CurrentPlayer == SpaceOwnership.FirstPlayer)
+        {
+            bool bombed = game.BombMove(col);
+            if (bombed)
+            {
+                UpdateStatus();
+                StateHasChanged();
+                await Task.Delay(300);
+                game.ClearBombBlast();
+                StateHasChanged();
+
+                if (game.Status == ExperimentStatus.Incomplete && game.CurrentPlayer == SpaceOwnership.SecondPlayer)
+                {
+                    await BotTurn();
+                }
+            }
+        }
+    }
+
+
+    // Let the bot play its turn
+    private async Task BotTurn()
+    {
+        await Task.Delay(200); // Slight delay for realism
+
+        // Decide if bot wants to use a bomb (if ready)
+        if (game.BombCooldown == 0 && bot.UseSpecialMove(game))
+        {
+            int col = bot.AccelerateQuark(game);
+            game.BombMove(col);
+            UpdateStatus();
+            StateHasChanged();
+            await Task.Delay(300);
+            game.ClearBombBlast();
+            StateHasChanged();
+        }
+        else
+        {
+            int col = bot.AccelerateQuark(game);
+            game.MakeMove(col);
+            UpdateStatus();
+            StateHasChanged();
+            await Task.Delay(120);
+        }
     }
 
     private void UpdateStatus()
@@ -68,16 +129,6 @@
             ExperimentStatus.Collapsed => $"{game.CurrentPlayer} wins!",
             ExperimentStatus.Uncertain => "Draw!",
             _ => null
-        };
-    }
-
-    private string GetCellSymbol(int row, int col)
-    {
-        return game.GetCell(row, col) switch
-        {
-            SpaceOwnership.FirstPlayer => "●",
-            SpaceOwnership.SecondPlayer => "○",
-            _ => "."
         };
     }
 
