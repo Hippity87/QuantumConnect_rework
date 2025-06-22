@@ -1,10 +1,26 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Quantum Connect Rework</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Quantum Connect Rework</h1>
 
-Welcome to your new app.
+<span>I participated in a competition this spring called CERN Spring Campus 2025. The idea was to provide a bot-algorithm and make the bots play against each other on a live server.
+    I came in third in the competition, with no prior experience with Java or such algorithmic bots that use heuristics like MCTS. I will not lie-- I used all the AI tools I could to
+    my advantage and the results were great. I learned a lot and the experience of developing and competing on the leaderboards was addictive to say the least.
+</span>
+<br />
+<span>This game version is an attempt from myself to reverse-engineer the original QuantumConnect app by Víctor Uría Valle and Cristian Schuszter from CERN.
+    I have chosen to reconstruct it with the Blazor-framework
+    so that I can work with C# and Visual Studio that I am more familiar with. The original application was done with Java and what I believe to be Swing Painter.
+    It had a certain set of rules for the competition 
+    like forbidden libraries and a 100ms limit per turn for the bots. Currently my version will have only a human player, You, playing against my competition bot.
+    The 100ms rule is not being enforced, although my bot is working within those limits as it was during the competitition.
+    Later on I might add more features, perhaps multiplayer, upload your own bot, and other game modes, but for now the
+    reason is to mostly demonstrate my own achievements from Spring Campus and possibly to use for finetuning my algorithm more. I hope you enjoy it nevertheless!
+</span>
+
+
+
 
 
 <GameBoard />

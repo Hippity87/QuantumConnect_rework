@@ -90,9 +90,6 @@ namespace QuantumConnect.Core.GameEngine
             else
                 SwitchPlayer();
 
-            // Bomb cooldown: decrement (if > 0) unless we just bombed
-            if (bombCooldown > 0)
-                bombCooldown--;
 
             return true;
         }

@@ -4,10 +4,11 @@
 @using Microsoft.AspNetCore.Components.Web
 
 <div class="connect4-info">
-    <h3>Quantum Connect</h3>
+    <br />
+
     <div>
         Turn: <span style="color:@(game.CurrentPlayer == SpaceOwnership.FirstPlayer ? "#22c55e" : "#ef4444"); font-weight:bold">
-            @(game.CurrentPlayer == SpaceOwnership.FirstPlayer ? "Green (You)" : "Red (Bot)")
+            @(game.CurrentPlayer == SpaceOwnership.FirstPlayer ? "Green (You)" : "Red (LexBot)")
         </span>
     </div>
     <div>

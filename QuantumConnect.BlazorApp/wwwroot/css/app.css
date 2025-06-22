@@ -103,10 +103,12 @@ code {
 }
 
 .connect4-info {
+    display:block;
     margin-bottom: 16px;
 }
 
 .connect4-board {
+    justify-content:center;
     background: #1e3a8a;
     padding: 18px 14px 18px 14px;
     border-radius: 18px;
