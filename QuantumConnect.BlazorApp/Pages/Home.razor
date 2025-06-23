@@ -4,20 +4,25 @@
 
 <h1>Quantum Connect Rework</h1>
 
-<span>I participated in a competition this spring called CERN Spring Campus 2025. The idea was to provide a bot-algorithm and make the bots play against each other on a live server.
-    I came in third in the competition, with no prior experience with Java or such algorithmic bots that use heuristics like MCTS. I will not lie-- I used all the AI tools I could to
-    my advantage and the results were great. I learned a lot and the experience of developing and competing on the leaderboards was addictive to say the least.
-</span>
-<br />
-<span>This game version is an attempt from myself to reverse-engineer the original QuantumConnect app by Víctor Uría Valle and Cristian Schuszter from CERN.
-    I have chosen to reconstruct it with the Blazor-framework
-    so that I can work with C# and Visual Studio that I am more familiar with. The original application was done with Java and what I believe to be Swing Painter.
-    It had a certain set of rules for the competition 
+<p>I participated in a competition this spring called CERN Spring Campus 2025. The idea was to provide a bot with AI-algorithms and make the bots play against each other on a live server.
+    I came in third in the competition, with no prior experience with Java or search algorithms like Minimax. I am however an avid gamer since childhood, so designing
+    the hierarchy for the decision-making came naturally to me. I will not lie though-- I used all the AI tools I could to explore my ideas thoroughly
+    and the results were great. I learned a lot and the experience of developing and competing for the top spot on the leaderboards was addictive to say the least.
+</p>
+<p>This game version is an attempt from myself to reverse-engineer <b>the original QuantumConnect app by Víctor and Cristi from CERN</b>.
+    I have chosen to reconstruct it with the Blazor-framework so that I can work with C# and Visual Studio that I am more familiar with. 
+    The original application was done with Java and what I believe to be Swing Painter. It had a certain set of rules for the competition 
     like forbidden libraries and a 100ms limit per turn for the bots. Currently my version will have only a human player, You, playing against my competition bot.
     The 100ms rule is not being enforced, although my bot is working within those limits as it was during the competitition.
     Later on I might add more features, perhaps multiplayer, upload your own bot, and other game modes, but for now the
     reason is to mostly demonstrate my own achievements from Spring Campus and possibly to use for finetuning my algorithm more. I hope you enjoy it nevertheless!
-</span>
+</p>
+<p>
+    <b>Disclaimer: This game is in development and may (will) have bugs. Original game idea by Víctor Uría Valle and Cristian Schuszter</b>.<br />
+    Game Rules: Turn-based game, in the spirit of the classic Connect Four. First player to 6-in-a-row (horizontal, vertical, diagonal) wins.<br /> 
+    Bomb: Right-click (on mobile hold) node to clear a 3x3 area. The bomb will always
+    go the lowest possible node in a column and explode. <br />Using the Bomb will use up your current turn.
+</p>
 
 
 

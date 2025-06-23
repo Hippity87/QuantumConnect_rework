@@ -17,8 +17,11 @@ namespace QuantumConnect.Core.GameEngine
         public IEnumerable<Move> MoveHistory => moveHistory.AsReadOnly();
 
         // Bomb/cooldown logic
-        private int bombCooldown = 0;
-        public int BombCooldown => bombCooldown; // Expose as read-only for UI
+        private int bombCooldownFirst = 0;
+        private int bombCooldownSecond = 0;
+        public int BombCooldown =>
+            (CurrentPlayer == SpaceOwnership.FirstPlayer) ? bombCooldownFirst : bombCooldownSecond;
+
         private readonly List<(int row, int col)> lastBombBlast = new();
         public IReadOnlyList<(int row, int col)> LastBombBlast => lastBombBlast;
 
@@ -102,7 +105,7 @@ namespace QuantumConnect.Core.GameEngine
         {
             if (Status != ExperimentStatus.Incomplete) return false;
             if (column < 0 || column >= Columns) return false;
-            if (bombCooldown > 0) return false;
+            if (BombCooldown > 0) return false;
 
             // Find the lowest empty spot in the column
             int bombRow = -1;
@@ -141,8 +144,25 @@ namespace QuantumConnect.Core.GameEngine
             // Gravity: after bomb
             ApplyGravity();
 
+
+            // Check win condition after bomb
+            if (CheckAnyWin())
+            {
+                Status = ExperimentStatus.Collapsed;
+                return true;
+            }
+            else if (IsBoardFull())
+            {
+                Status = ExperimentStatus.Uncertain;
+                return true;
+            }
+
             // Set bomb cooldown (10 turns)
-            bombCooldown = 10;
+            if (CurrentPlayer == SpaceOwnership.FirstPlayer)
+                bombCooldownFirst = 10;
+            else
+                bombCooldownSecond = 10;
+
 
             // Move to next player, clear any game over
             SwitchPlayer();
@@ -190,7 +210,8 @@ namespace QuantumConnect.Core.GameEngine
             moveHistory.Clear();
             Status = ExperimentStatus.Incomplete;
             CurrentPlayer = SpaceOwnership.FirstPlayer;
-            bombCooldown = 0;
+            bombCooldownFirst = 0;
+            bombCooldownSecond = 0;
             lastBombBlast.Clear();
         }
 
@@ -201,11 +222,31 @@ namespace QuantumConnect.Core.GameEngine
                 : SpaceOwnership.FirstPlayer;
 
             // Only decrement cooldown if not 0 and not just set by bomb
-            if (bombCooldown > 0)
-                bombCooldown--;
+            if (CurrentPlayer == SpaceOwnership.FirstPlayer && bombCooldownFirst > 0)
+                bombCooldownFirst--;
+            else if (CurrentPlayer == SpaceOwnership.SecondPlayer && bombCooldownSecond > 0)
+                bombCooldownSecond--;
         }
 
         // Win logic (connect WinLength)
+
+        private bool CheckAnyWin()
+        {
+            for (int r = 0; r < Rows; r++)
+            {
+                for (int c = 0; c < Columns; c++)
+                {
+                    if (board[r, c] != SpaceOwnership.Empty)
+                    {
+                        if (CheckWin(r, c))
+                            return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+
         private bool CheckWin(int row, int col)
         {
             var player = board[row, col];
