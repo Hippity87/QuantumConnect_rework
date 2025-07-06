@@ -177,3 +177,19 @@ code {
         background: #e0e7ef;
     }
 }
+
+
+
+
+
+
+@media (max-width: 600px) {
+    .connect4-cell {
+        width: 30px;
+        height: 30px;
+    }
+
+    .connect4-board {
+        padding: 8px 2px;
+    }
+}

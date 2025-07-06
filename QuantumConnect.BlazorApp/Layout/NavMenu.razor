@@ -1,4 +1,6 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Quantum.Projectlexagon.fi</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -10,15 +12,21 @@
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="https://projectlexagon.fi" target="_blank" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span>Projectlexagon.fi
+            <a class="nav-link" href="https://projectlexagon.fi" target="_blank">
+                Projectlexagon.fi
+            </a>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/weather">
+                <Icon Name="IconName.Sun" /> Weather Dashboard
             </NavLink>
         </div>
+
 
 
 
@@ -28,7 +36,17 @@
 @code {
     private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    // private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string? NavMenuCssClass
+    {
+        get
+        {
+            // Jos haluat collapsen vain mobiilissa,
+            // lisää breakpoint (esim. d-md-none) classiin.
+            return collapseNavMenu ? "collapse d-md-block" : "d-md-block";
+        }
+    }
+
 
     private void ToggleNavMenu()
     {

@@ -1,0 +1,94 @@
+﻿@page "/weather"
+@using Blazorise.Charts
+@inject HttpClient Http
+
+<h2><Icon Name="IconName.Cloud" /> Weather Dashboard</h2>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card shadow bg-dark text-light p-3 mb-3">
+            <div class="d-flex align-items-center">
+                <Icon Name="IconName.Sun" Size="IconSize.3x" class="me-2 text-danger" />
+                <span class="fs-4">Lämpötila nyt: <b>@currentTemperature&nbsp;°C</b></span>
+            </div>
+            <LineChart @ref="temperatureChart" TItem="double" class="my-3" />
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow bg-dark text-light p-3 mb-3">
+            <div class="d-flex align-items-center">
+                <Icon Name="IconName.Tint" Size="IconSize.3x" class="me-2 text-primary" />
+                <span class="fs-4">Kosteus nyt: <b>@currentHumidity&nbsp;%</b></span>
+            </div>
+            <LineChart @ref="humidityChart" TItem="double" class="my-3" />
+        </div>
+    </div>
+</div>
+
+@code {
+    LineChart<double>? temperatureChart;
+    LineChart<double>? humidityChart;
+    List<double> temperatures = new();
+    List<double> humidities = new();
+    List<string> labels = new();
+    double currentTemperature = 0;
+    double currentHumidity = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchData();
+        _ = StartPolling();
+    }
+
+    async Task StartPolling()
+    {
+        while (true)
+        {
+            await Task.Delay(5000);
+            await FetchData();
+        }
+    }
+
+    async Task FetchData()
+    {
+        // Hae viimeiset 48 mittausta (säädä tarpeen mukaan)
+        var data = await Http.GetFromJsonAsync<List<SensorData>>("/api/SensorData?lastN=48");
+        if (data is null || data.Count == 0) return;
+
+        temperatures = data.Select(d => d.Temperature).ToList();
+        humidities = data.Select(d => d.Humidity).ToList();
+        labels = data.Select(d => d.Timestamp.ToString("HH:mm")).ToList();
+        currentTemperature = temperatures.LastOrDefault();
+        currentHumidity = humidities.LastOrDefault();
+
+        // Päivitä käyrät
+        await temperatureChart.Clear();
+        await temperatureChart.AddLabelsDatasetsAndUpdate(labels, new LineChartDataset<double>
+            {
+                Label = "Lämpötila (°C)",
+                Data = temperatures,
+                BackgroundColor = "rgba(255,99,132,0.2)",
+                BorderColor = "rgba(255,99,132,1)",
+                PointBackgroundColor = "rgba(255,99,132,1)",
+                Fill = false
+            });
+
+        await humidityChart.Clear();
+        await humidityChart.AddLabelsDatasetsAndUpdate(labels, new LineChartDataset<double>
+            {
+                Label = "Kosteus (%)",
+                Data = humidities,
+                BackgroundColor = "rgba(60,180,255,0.2)",
+                BorderColor = "rgba(60,180,255,1)",
+                PointBackgroundColor = "rgba(60,180,255,1)",
+                Fill = false
+            });
+    }
+
+    public class SensorData
+    {
+        public double Temperature { get; set; }
+        public double Humidity { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+}
