@@ -1,14 +1,15 @@
 ﻿@page "/weather"
 @using Blazorise.Charts
+@using Blazorise.Icons.FontAwesome
 @inject HttpClient Http
 
-<h2><Icon Name="IconName.Cloud" /> Weather Dashboard</h2>
+<h2><Blazorise.Icon Name="IconName.Cloud" /> Weather Dashboard</h2>
 
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="card shadow bg-dark text-light p-3 mb-3">
             <div class="d-flex align-items-center">
-                <Icon Name="IconName.Sun" Size="IconSize.3x" class="me-2 text-danger" />
+                <Blazorise.Icon Name="IconName.Sun" Size="IconSize.3x" class="me-2 text-danger" />
                 <span class="fs-4">Lämpötila nyt: <b>@currentTemperature&nbsp;°C</b></span>
             </div>
             <LineChart @ref="temperatureChart" TItem="double" class="my-3" />
@@ -17,7 +18,7 @@
     <div class="col-md-6">
         <div class="card shadow bg-dark text-light p-3 mb-3">
             <div class="d-flex align-items-center">
-                <Icon Name="IconName.Tint" Size="IconSize.3x" class="me-2 text-primary" />
+                <Blazorise.Icon Name="IconName.Sun" Size="IconSize.3x" class="me-2 text-primary" />
                 <span class="fs-4">Kosteus nyt: <b>@currentHumidity&nbsp;%</b></span>
             </div>
             <LineChart @ref="humidityChart" TItem="double" class="my-3" />
@@ -26,8 +27,8 @@
 </div>
 
 @code {
-    LineChart<double>? temperatureChart;
-    LineChart<double>? humidityChart;
+    private LineChart<double>? temperatureChart = null!;
+    private LineChart<double>? humidityChart = null!;
     List<double> temperatures = new();
     List<double> humidities = new();
     List<string> labels = new();
@@ -58,8 +59,15 @@
         temperatures = data.Select(d => d.Temperature).ToList();
         humidities = data.Select(d => d.Humidity).ToList();
         labels = data.Select(d => d.Timestamp.ToString("HH:mm")).ToList();
-        currentTemperature = temperatures.LastOrDefault();
-        currentHumidity = humidities.LastOrDefault();
+        // chat halusi tähän jotain reverse-metodeita, mutta mielestäni logiikka oli päin vittua
+
+
+
+
+        // eli palataan tähän kohtaan varmaan vielä. katsotaan miten käppyrä piirtyy ensin.
+        currentTemperature = temperatures.FirstOrDefault();
+        currentHumidity = humidities.FirstOrDefault();
+
 
         // Päivitä käyrät
         await temperatureChart.Clear();
