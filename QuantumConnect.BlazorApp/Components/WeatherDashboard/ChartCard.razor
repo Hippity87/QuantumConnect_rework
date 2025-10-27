@@ -1,0 +1,79 @@
+﻿@using Blazorise.Charts
+@using QuantumConnect.BlazorApp.Components.WeatherDashboard
+
+<Card class="shadow bg-dark text-light p-3 mb-3">
+    <div class="d-flex align-items-center">
+        <Blazorise.Icon Name="@GetIcon()" Size="IconSize.3x" class="@IconClass" />
+        <span class="fs-4">@Config.Title: <b>@CurrentValueFormatted @Config.Unit</b></span>
+    </div>
+    <LineChart @ref="lineChart" TItem="double" class="my-3" />
+</Card>
+
+@code {
+    [Parameter] public IChartConfig Config { get; set; } = default!;
+    [Parameter] public List<SensorData> Data { get; set; } = new();
+    [Parameter] public List<string> Labels { get; set; } = new();
+
+    private LineChart<double>? lineChart;
+
+    private string IconClass => $"me-2 {Config.IconClass}";
+    private double CurrentValue => Data.Count > 0 ? Config.Selector(Data.Last()) : 0;
+    private string CurrentValueFormatted => Config.ValueFormat(CurrentValue);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await UpdateChart();
+    }
+
+    private async Task UpdateChart()
+    {
+        if (lineChart is null || Data.Count == 0 || Labels.Count == 0) return;
+
+        Console.WriteLine($"UpdateChart {Config.Title}: Data.Count={Data.Count}, Labels.Count={Labels.Count}");
+        foreach (var d in Data)
+        {
+            Console.WriteLine($"Data point: {d.Timestamp}, Temp={d.Temperature}, Hum={d.Humidity}");
+        }
+
+        var values = Data.Select(Config.Selector).ToList();
+
+        // lineChart.Options = new LineChartOptions
+        //     {
+        //         Scales = new ChartScales
+        //         {
+        //             Y = new ChartAxis
+        //             {
+        //                 Min = Config.YMin,
+        //                 Max = Config.YMax,
+        //                 SuggestedMin = Config.YSuggestedMin,
+        //                 SuggestedMax = Config.YSuggestedMax,
+        //                 BeginAtZero = Config.YBeginAtZero,
+        //                 Ticks = new ChartAxisTicks
+        //                 {
+        //                     StepSize = Config.YStep,
+        //                     Count = Config.YCount
+        //                 }
+        //             }
+        //         }
+        //     };
+
+        await lineChart.Clear();
+        await lineChart.AddLabelsDatasetsAndUpdate(
+            Labels,
+            new LineChartDataset<double>
+                {
+                    Label = $"{Config.Title} ({Config.Unit})",
+                    Data = values,
+                    BackgroundColor = Config.BackgroundColor,
+                    BorderColor = Config.LineColor,
+                    PointBackgroundColor = Config.LineColor,
+                    Fill = false
+                }
+        );
+    }
+
+    private IconName GetIcon()
+    {
+        return Enum.TryParse<IconName>(Config.IconName, out var icon) ? icon : IconName.InfoCircle;
+    }
+}

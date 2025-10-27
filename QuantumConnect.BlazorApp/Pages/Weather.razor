@@ -1,39 +1,30 @@
 ﻿@page "/weather"
-@using Blazorise.Charts
-@using Blazorise.Icons.FontAwesome
+@using QuantumConnect.BlazorApp.Components.WeatherDashboard
 @inject HttpClient Http
 
 <h2><Blazorise.Icon Name="IconName.Cloud" /> Weather Dashboard</h2>
 
+<div class="mb-3 d-flex gap-2">
+    <button class="btn btn-outline-light" disabled>Day</button>
+    <button class="btn btn-outline-light" disabled>Week</button>
+    <button class="btn btn-outline-light" disabled>Month</button>
+</div>
+
 <div class="row mb-4">
     <div class="col-md-6">
-        <div class="card shadow bg-dark text-light p-3 mb-3">
-            <div class="d-flex align-items-center">
-                <Blazorise.Icon Name="IconName.Sun" Size="IconSize.3x" class="me-2 text-danger" />
-                <span class="fs-4">Lämpötila nyt: <b>@currentTemperature&nbsp;°C</b></span>
-            </div>
-            <LineChart @ref="temperatureChart" TItem="double" class="my-3" />
-        </div>
+        <ChartCard Config="_tempConfig" Data="_latestData" Labels="_labels" />
     </div>
     <div class="col-md-6">
-        <div class="card shadow bg-dark text-light p-3 mb-3">
-            <div class="d-flex align-items-center">
-                <Blazorise.Icon Name="IconName.Sun" Size="IconSize.3x" class="me-2 text-primary" />
-                <span class="fs-4">Kosteus nyt: <b>@currentHumidity&nbsp;%</b></span>
-            </div>
-            <LineChart @ref="humidityChart" TItem="double" class="my-3" />
-        </div>
+        <ChartCard Config="_humConfig" Data="_latestData" Labels="_labels" />
     </div>
 </div>
 
 @code {
-    private LineChart<double>? temperatureChart = null!;
-    private LineChart<double>? humidityChart = null!;
-    List<double> temperatures = new();
-    List<double> humidities = new();
-    List<string> labels = new();
-    double currentTemperature = 0;
-    double currentHumidity = 0;
+    private readonly IChartConfig _tempConfig = new TemperatureChartConfig();
+    private readonly IChartConfig _humConfig = new HumidityChartConfig();
+
+    private List<SensorData> _latestData = new();
+    private List<string> _labels = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,58 +36,32 @@
     {
         while (true)
         {
-            await Task.Delay(5000);
+            await Task.Delay(5 * 60 * 1000); // Päivitä 5min välein
             await FetchData();
         }
     }
 
     async Task FetchData()
     {
-        // Hae viimeiset 48 mittausta (säädä tarpeen mukaan)
-        var data = await Http.GetFromJsonAsync<List<SensorData>>("/api/SensorData?lastN=48");
-        if (data is null || data.Count == 0) return;
 
-        temperatures = data.Select(d => d.Temperature).ToList();
-        humidities = data.Select(d => d.Humidity).ToList();
-        labels = data.Select(d => d.Timestamp.ToString("HH:mm")).ToList();
-        // chat halusi tähän jotain reverse-metodeita, mutta mielestäni logiikka oli päin vittua
+        // Hae tarpeeksi monta riviä!
+        var data = await Http.GetFromJsonAsync<List<SensorData>>("/api/SensorData?lastN=500");
+        if (data is null || data.Count == 0)
+            return;
+
+        Console.WriteLine($"APIsta tuli {data.Count} riviä");
+        // Järjestä aikajärjestykseen
+        data = data.OrderBy(d => d.Timestamp).ToList();
+
+        // Ota viimeiset 24 (esim. viimeisen vuorokauden ajalta) — tee tämä niin että vanhin ensin!
+        var latest = data.TakeLast(24).ToList();
+
+        _latestData = latest;
+        _labels = latest.Select(d => d.Timestamp.ToLocalTime().ToString("HH:mm")).ToList();
 
 
+        StateHasChanged();
+        Console.WriteLine($"latest.Count = {latest.Count}, labels.Count = {_labels.Count}");
 
-
-        // eli palataan tähän kohtaan varmaan vielä. katsotaan miten käppyrä piirtyy ensin.
-        currentTemperature = temperatures.FirstOrDefault();
-        currentHumidity = humidities.FirstOrDefault();
-
-
-        // Päivitä käyrät
-        await temperatureChart.Clear();
-        await temperatureChart.AddLabelsDatasetsAndUpdate(labels, new LineChartDataset<double>
-            {
-                Label = "Lämpötila (°C)",
-                Data = temperatures,
-                BackgroundColor = "rgba(255,99,132,0.2)",
-                BorderColor = "rgba(255,99,132,1)",
-                PointBackgroundColor = "rgba(255,99,132,1)",
-                Fill = false
-            });
-
-        await humidityChart.Clear();
-        await humidityChart.AddLabelsDatasetsAndUpdate(labels, new LineChartDataset<double>
-            {
-                Label = "Kosteus (%)",
-                Data = humidities,
-                BackgroundColor = "rgba(60,180,255,0.2)",
-                BorderColor = "rgba(60,180,255,1)",
-                PointBackgroundColor = "rgba(60,180,255,1)",
-                Fill = false
-            });
-    }
-
-    public class SensorData
-    {
-        public double Temperature { get; set; }
-        public double Humidity { get; set; }
-        public DateTime Timestamp { get; set; }
     }
 }
